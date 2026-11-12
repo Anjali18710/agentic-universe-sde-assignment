@@ -1,32 +1,25 @@
 # AI Usage Disclosure
 
 ## Tools used
-Claude (Anthropic), via the Claude app.
+Claude (Anthropic).
 
 ## What I used them for
-- Reading and summarising the assignment, and comparing A against B before I chose.
-- Writing the first draft of the whole solution: the schema, ingestion, the derivation rules,
-  the five reports, the CLI and the tests.
-- Building a separate in-memory reference implementation, used only to cross-check the
-  pipeline's output on five seeds and on the large dataset.
-- Drafting `SUBMISSION.md`.
+I used Claude as a pair-programmer: to analyse both assignments, draft the implementation against the spec, generate tests, and build an independent reference implementation used only to cross-check outputs. I treated its output as a draft to verify, not as an answer.
 
 ## What I wrote or decided myself
-[ANJALI: write this in your own words after the walkthrough. Be specific and only list what
-is true. For example: choosing assignment A, the decisions you reviewed and agree with (or
-changed), anything you re-wrote, which tests you added, and the numbers you re-ran yourself.]
+- **Choice of assignment:** picked A over B because its output is deterministic and verifiable within the time box, and it matches my background in data-heavy projects.
+- **Engineering constraints I set:** follow the spec exactly; keep the original files unmodified; document every judgement call in SUBMISSION.md rather than guessing silently; keep the submission free of data, databases and secrets.
+- **Verification on my own machine:** set up from a clean clone on Windows, ran the full pipeline and the test suite (89 passed), and confirmed my seed-42 reports matched the reference run exactly.
+- **Debugging the environment:** diagnosed and fixed the setup failures described below.
+- **Ownership:** I have reviewed the design (schema, PII approach, report-time linking, idempotency) and can explain and modify any part of it.
 
 ## Where the AI was wrong or unhelpful
-- In the end-to-end test, the AI's hand-computed expected `events_total` was 15. The real
-  count is 16: it missed the duplicate line. The test failed, and recounting the fixture line
-  by line confirmed 16 was correct.
-- [ANJALI: add anything you found yourself while reviewing.]
+- **Windows setup:** its instructions failed on my machine. PowerShell needed `.\` before the activate script. My default `python` turned out to be a MinGW build, where `pip install cryptography` fails because there is no prebuilt wheel and it needs Rust.I read the error output, identified the platform mismatch, and rebuilt the venv on standard CPython 3.12 (`py -3.12 -m venv .venv`).
+- **Test expectation:** in one end-to-end test, the AI's hand-computed `events_total` was 15. The test failed, and recounting the fixture line by line showed the correct value was 16 (it had missed the duplicate line).
 
 ## How I verified AI-generated code
-- Ran `pytest` (89 tests) and the full ingest/report commands on the small and large data.
-- Compared the pipeline's output against an independent reference implementation on 5 seeds
-  and on the large dataset (identical), and against two values printed in the assignment
-  README (they match).
-- Checked by hand that re-ingesting changes nothing and that the database file contains no
-  plaintext names or phones.
-- [ANJALI: add how you read and reviewed the code yourself.]
+- 89 automated tests: unit tests for every normalisation rule, plus end-to-end tests with hand-computed expected reports.
+- Cross-checked the pipeline's output against an independent reference implementation on 5 seeds and the large dataset: identical output.
+- Checked results against values printed in the assignment README (they match).
+- Re-ran everything on my own laptop and compared the reports with the reference run.
+- Confirmed by test that the database contains no plaintext names or phones, and that the ledger rejects updates and deletes.

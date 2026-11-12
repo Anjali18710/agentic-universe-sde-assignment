@@ -3,7 +3,7 @@
 ## Candidate
 - **Name:** Anjali
 - **Assignment chosen:** A (Data)
-- **Time spent (honest estimate):** [ANJALI: fill in]
+- **Time spent (honest estimate):**  6 hours
 
 ## How to run
 ```bash
@@ -148,7 +148,7 @@ cloud VM:**
 | report | 11.5 s |
 | **total** | **about 67 s** (target < 120 s) |
 
-[ANJALI: re-run on your laptop and put your own numbers here]
+On my Windows laptop (Python 3.12), small dataset: each ingest and report step took about 0.3 s, and pytest ran 89 tests in 7.7 s.
 
 Surprises in the data:
 - About 25% of leads are never called.
